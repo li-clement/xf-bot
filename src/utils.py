@@ -13,6 +13,7 @@ from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 import websocket
 answer = ""
+list = []
 
 class Ws_Param(object):
 
@@ -58,27 +59,29 @@ class Ws_Param(object):
         return url
 
 
-# 收到websocket错误的处理
+# events on websocket errors ocurred
 def on_error(ws, error):
     print("### error:", error)
 
 
-# 收到websocket关闭的处理
+# events on websocket closed
 def on_close(ws,one,two):
     print(" ")
 
 
-# 收到websocket连接建立的处理
+# events on websocket connection
 def on_open(ws):
     thread.start_new_thread(run, (ws,))
 
 
 def run(ws, *args):
+    global answer
+    answer = ""
     data = json.dumps(gen_params(appid=ws.appid, domain= ws.domain,question=ws.question))
     ws.send(data)
 
 
-# 收到websocket消息的处理
+# events on message actions
 def on_message(ws, message):
     # print(message)
     data = json.loads(message)
@@ -93,8 +96,6 @@ def on_message(ws, message):
         print(content,end ="")
         global answer
         answer += content
-        print(answer,end ="")
-        
         # print(1)
         if status == 2:
             ws.close()
@@ -102,7 +103,7 @@ def on_message(ws, message):
 
 def gen_params(appid, domain,question):
     """
-    通过appid和用户的提问来生成请参数
+    The input schema of Xunfei Spark LLM API 
     """
     data = {
         "header": {
@@ -126,33 +127,21 @@ def gen_params(appid, domain,question):
     return data
 
 
-def greet(name):
+def greet(message, history):
     wsParam = Ws_Param("AppID", "APIKey", "APISecret", "APIUrl")
     websocket.enableTrace(False)
     wsUrl = wsParam.create_url()
-    print(f'url: {wsUrl}')
     ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
-    ws.appid = "28337b93"
-    ws.question = [{"role": "user", "content": "你会做什么"}]
+    ws.appid = "AppID"
+    list.append({"role": "user", "content": message})
+    ws.question = list
     ws.domain = "generalv2"
+
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+    list.append({"role": "assistant", "content": answer})
     return answer
 
-with gr.Blocks() as demo:
-    name = gr.Textbox(label="Name")
-    output = gr.Textbox(label="Output Box")
-    greet_btn = gr.Button("Greet")
-    greet_btn.click(fn=greet, inputs=name, outputs=output, api_name="greet")
+demo = gr.ChatInterface(greet)
     
 if __name__ == "__main__":
-    # print("星火:")
-    # wsParam = Ws_Param("28337b93", "fa0df2faf0a15ff64a791cf2c5ac5a6d", "OWIwMTllZTU2Mzk3NTA5M2JhYjFkYWYx", "wss://spark-api.xf-yun.com/v2.1/chat")
-    # websocket.enableTrace(False)
-    # wsUrl = wsParam.create_url()
-    # ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
-    # ws.appid = "28337b93"
-    # ws.question = [{"role": "user", "content": "你会做什么"}]
-    # ws.domain = "General"
-    # ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-    
     demo.launch(share="True", inbrowser=True, server_name = '0.0.0.0', server_port=8888)   
