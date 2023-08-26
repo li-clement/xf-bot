@@ -27,8 +27,7 @@ class Ws_Param(object):
         self.host = urlparse(Spark_url).netloc
         self.path = urlparse(Spark_url).path
         self.Spark_url = Spark_url
-
-      
+        print(f'Appid: {APPID}, Apikey: {APIKey}, ApiSecret: {APISecret}, APIUrl: {Spark_url}')
 
     # 生成url
     def create_url(self):
@@ -156,4 +155,4 @@ def greet(message, history):
 demo = gr.ChatInterface(greet).queue()
     
 if __name__ == "__main__":
-    demo.launch(share="True", inbrowser=True, server_name = '0.0.0.0', server_port=8888)
+    demo.launch(share="False", server_name = '0.0.0.0', server_port=8888)

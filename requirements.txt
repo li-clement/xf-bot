@@ -1,2 +1,2 @@
-gradio == 3.41.1
+gradio
 websocket-client
