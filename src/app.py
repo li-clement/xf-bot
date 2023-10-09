@@ -16,7 +16,7 @@ import websocket
 radio_index = 0
 answer = ""
 history_list = []
-openai.api_key = "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"
+openai.api_key = os.environ.get('OPENAI')
 
 # events on websocket errors ocurred
 def on_error(ws, error):
