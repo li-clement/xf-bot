@@ -1,3 +1,7 @@
-src/utils.py
-k8s
+dist/
+build/
+k8s/
+flagged/
+src/__pycache__
+app.spec
 env.sh
