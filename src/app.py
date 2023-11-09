@@ -112,7 +112,7 @@ def xunfei(message, history):
     else:
         history_list.append({"role": "user", "content": message})
         response = openai.ChatCompletion.create(
-            model = 'gpt-3.5-turbo',
+            model = 'gpt-4-1106-preview',
             messages=history_list,
             temperature=0.2,
         )
