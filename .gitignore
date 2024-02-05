@@ -5,3 +5,4 @@ flagged/
 src/__pycache__
 app.spec
 env.sh
+.vscode/

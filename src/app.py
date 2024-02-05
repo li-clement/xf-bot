@@ -87,6 +87,9 @@ def gen_params(appid, domain,question):
 
 
 def xunfei(message, history):
+    """
+    The output process of Xunfei Spark LLM
+    """
     global history_list
     print(radio_index)
     if radio_index == 0:
